@@ -45,17 +45,7 @@ const Login = () => {
         if (signUpError) throw signUpError;
 
         if (signUpData.user) {
-          // Insert into profiles table
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .insert([{ 
-              id: signUpData.user.id, 
-              full_name: name, 
-              email 
-            }]);
-
-          if (profileError) throw profileError;
-
+          // The profile will be created automatically by the database trigger
           toast({
             title: "Registration successful!",
             description: "Please check your email to verify your account.",
@@ -85,12 +75,12 @@ const Login = () => {
         }
       }
     } catch (error: any) {
+      console.error('Auth error:', error);
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message,
       });
-      console.error('Auth error:', error);
     }
   };
 
