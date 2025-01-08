@@ -5,15 +5,25 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
+import { createClient } from "@supabase/supabase-js";
+import { useNavigate } from "react-router-dom";
+
+// Initialize Supabase client
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [isRobot, setIsRobot] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!isRobot) {
@@ -25,11 +35,63 @@ const Login = () => {
       return;
     }
 
-    // Here you would typically handle the login with Supabase
-    toast({
-      title: "Login successful!",
-      description: "Redirecting to dashboard...",
-    });
+    try {
+      if (isRegistering) {
+        // Handle registration
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: name,
+            },
+          },
+        });
+
+        if (signUpError) throw signUpError;
+
+        // Insert into profiles table
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([{ id: signUpData.user?.id, full_name: name, email }]);
+
+        if (profileError) throw profileError;
+
+        toast({
+          title: "Registration successful!",
+          description: "Please check your email to verify your account.",
+        });
+        
+        setIsRegistering(false);
+      } else {
+        // Handle login
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (signInError) throw signInError;
+
+        toast({
+          title: "Login successful!",
+          description: "Redirecting to dashboard...",
+        });
+
+        // Check if user is admin (has admin in email)
+        if (email.includes('admin')) {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
+      }
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+      console.error('Auth error:', error);
+    }
   };
 
   return (
@@ -39,22 +101,26 @@ const Login = () => {
         <div className="container mx-auto px-4 max-w-md">
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
+              <CardTitle className="text-2xl font-bold text-center">
+                {isRegistering ? "Register" : "Login"}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium mb-2">
-                    Name
-                  </label>
-                  <Input
-                    id="name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
+                {isRegistering && (
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium mb-2">
+                      Name
+                    </label>
+                    <Input
+                      id="name"
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required={isRegistering}
+                    />
+                  </div>
+                )}
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium mb-2">
                     Email
@@ -93,8 +159,19 @@ const Login = () => {
                   </label>
                 </div>
                 <Button type="submit" className="w-full">
-                  Login
+                  {isRegistering ? "Register" : "Login"}
                 </Button>
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={() => setIsRegistering(!isRegistering)}
+                    className="text-sm text-blue-600 hover:underline"
+                  >
+                    {isRegistering
+                      ? "Already have an account? Login"
+                      : "Don't have an account? Register"}
+                  </button>
+                </div>
               </form>
             </CardContent>
           </Card>
