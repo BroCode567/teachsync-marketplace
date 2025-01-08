@@ -44,19 +44,25 @@ const Login = () => {
 
         if (signUpError) throw signUpError;
 
-        // Insert into profiles table
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([{ id: signUpData.user?.id, full_name: name, email }]);
+        if (signUpData.user) {
+          // Insert into profiles table
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert([{ 
+              id: signUpData.user.id, 
+              full_name: name, 
+              email 
+            }]);
 
-        if (profileError) throw profileError;
+          if (profileError) throw profileError;
 
-        toast({
-          title: "Registration successful!",
-          description: "Please check your email to verify your account.",
-        });
-        
-        setIsRegistering(false);
+          toast({
+            title: "Registration successful!",
+            description: "Please check your email to verify your account.",
+          });
+          
+          setIsRegistering(false);
+        }
       } else {
         // Handle login
         const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
