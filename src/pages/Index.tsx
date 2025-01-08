@@ -1,13 +1,26 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/Navbar";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <>
+      <Navbar />
+      <main className="pt-16">
+        <section className="bg-primary/5 py-20">
+          <div className="container mx-auto px-4 text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              Learn and Grow with Our Courses
+            </h1>
+            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+              Access high-quality video courses taught by expert instructors
+            </p>
+            <Button size="lg" className="text-lg px-8">
+              Browse Courses
+            </Button>
+          </div>
+        </section>
+      </main>
+    </>
   );
 };
 
