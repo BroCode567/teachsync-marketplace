@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
+import { SubscriptionPlans } from "@/components/SubscriptionPlans";
 
 const Index = () => {
   return (
@@ -19,6 +20,7 @@ const Index = () => {
             </Button>
           </div>
         </section>
+        <SubscriptionPlans />
       </main>
     </>
   );
