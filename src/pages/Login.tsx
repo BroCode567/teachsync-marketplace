@@ -4,22 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/components/ui/use-toast";
-import { createClient } from "@supabase/supabase-js";
+import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-
-// Initialize Supabase client with environment variables
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Supabase credentials are missing. Please check your environment variables.');
-}
-
-const supabase = createClient(
-  supabaseUrl || '',
-  supabaseKey || ''
-);
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -186,7 +173,6 @@ const Login = () => {
       </main>
     </>
   );
-
 };
 
 export default Login;
