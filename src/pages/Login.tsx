@@ -8,7 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { createClient } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
 
-// Initialize Supabase client
+// Initialize Supabase client with environment variables
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_ANON_KEY
