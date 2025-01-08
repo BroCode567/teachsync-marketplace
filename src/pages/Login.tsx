@@ -9,9 +9,16 @@ import { createClient } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
 
 // Initialize Supabase client with environment variables
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Supabase credentials are missing. Please check your environment variables.');
+}
+
 const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
+  supabaseUrl || '',
+  supabaseKey || ''
 );
 
 const Login = () => {
@@ -179,6 +186,7 @@ const Login = () => {
       </main>
     </>
   );
+
 };
 
 export default Login;
